@@ -1,3 +1,4 @@
+const formidable = require('express-formidable')
 const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
@@ -5,16 +6,12 @@ const app = express()
 const booksRoutes = require('./routes/books')
 const userRoutes = require('./routes/user')
 
-const { modifyingBook } = require('./controllers/books')
 mongoose
-  .connect(
-    'mongodb+srv://kayath:MSNoDd8CZLVUVmPq@cluster0.8mkdq.mongodb.net/',
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect('mongodb+srv://kayath:MSNoDd8CZLVUVmPq@cluster0.8mkdq.mongodb.net/')
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'))
 
-app.use(express.json())
+app.use(formidable())
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -28,9 +25,6 @@ app.use((req, res, next) => {
   )
   next()
 })
-
-const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/books', booksRoutes)
 app.use('/api/auth', userRoutes)

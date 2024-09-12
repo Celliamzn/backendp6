@@ -4,10 +4,10 @@ const bcrypt = require('bcrypt')
 
 exports.signup = (req, res, next) => {
   bcrypt
-    .hash(req.body.password, 10)
+    .hash(req.fields.password, 10)
     .then((hash) => {
       const user = new User({
-        email: req.body.email,
+        email: req.fields.email,
         password: hash,
       })
       user
@@ -19,7 +19,7 @@ exports.signup = (req, res, next) => {
 }
 
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.fields.email })
     .then((user) => {
       if (!user) {
         return res
@@ -27,7 +27,7 @@ exports.login = (req, res, next) => {
           .json({ message: 'Paire login/mot de passe incorrecte' })
       }
       bcrypt
-        .compare(req.body.password, user.password)
+        .compare(req.fields.password, user.password)
         .then((valid) => {
           if (!valid) {
             return res
