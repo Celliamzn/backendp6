@@ -1,22 +1,25 @@
 const multer = require('multer')
+const SharpMulter = require('sharp-multer')
 
-const MIME_TYPES = {
-  'image/jpg': 'jpg',
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-}
+const newFilenameFunction = (og_filename, options) => {
+  const name = og_filename.split(' ').join('_')
+  const newname =name + Date.now() + '.' + options.fileFormat
+  return newname;
+};
 
-const storage = multer.diskStorage({
+const storage = SharpMulter ({
   destination: (req, file, callback) => {
     callback(null, 'images')
   },
-  filename: (req, file, callback) => {
-    const name = file.originalname.split(' ').join('_')
-    const extension = MIME_TYPES[file.mimetype]
-    console.log(name + Date.now() + '.' + extension)
+    filename: newFilenameFunction,
 
-    callback(null, name + Date.now() + '.' + extension)
+  imageOptions: {
+    fileFormat: 'jpg',
+    quality: 80,
+    resize: { width: 500, height: 500 },
   },
+
+
 })
 
-module.exports = multer({ storage: storage }).single('file')
+module.exports = multer({ storage: storage }).single('image')
