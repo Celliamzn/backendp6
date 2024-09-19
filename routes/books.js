@@ -3,8 +3,18 @@ const router = express.Router()
 const auth = require('../middleware/auth')
 const multer = require('../middleware/multer-config')
 
-console.log(multer)
+// Création du controller de book
 const booksCtrl = require('../controllers/books')
+
+/**Création des 7 routes liées aux livres : 
+ * Créer un livre
+ * Lire les 3 livres les + notés
+ * Màj d'un livre
+ * Supprimer un livre
+ * Lire un livre
+ * Lire tous les livres
+ * Ajout d'une note
+ * **/
 
 router.post('/', auth, multer, booksCtrl.createBook)
 router.get('/bestrating', booksCtrl.getBestRating)
