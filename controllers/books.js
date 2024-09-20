@@ -12,24 +12,28 @@ const average = (array) => {
 
 exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book)
-  // Suppression de l'ID fourni par le client (pour éviter les conflits)
-  delete bookObject._id
-  // Suppression de l'userId pour sécuriser la création
-  delete bookObject._userId
-  const book = new Book({
-    ...bookObject,
-    // Récupération de l'userid de la personne qui créé
-    userId: req.auth.userId,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${
-      req.file.filename
-    }`,
-    averageRating: bookObject.ratings[0].grade,
-  })
-  // Enregistrement du livre dans la base de données
-  book
-    .save()
-    .then(() => res.status(201).json({ message: ' Livre enregistré !' }))
-    .catch((error) => res.status(400).json({ error }))
+  if (bookObject.ratings[0].grade !== 0) {
+    // Suppression de l'ID fourni par le client (pour éviter les conflits)
+    delete bookObject._id
+    // Suppression de l'userId pour sécuriser la création
+    delete bookObject._userId
+    const book = new Book({
+      ...bookObject,
+      // Récupération de l'userid de la personne qui créé
+      userId: req.auth.userId,
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${
+        req.file.filename
+      }`,
+      averageRating: bookObject.ratings[0].grade,
+    })
+    // Enregistrement du livre dans la base de données
+    book
+      .save()
+      .then(() => res.status(201).json({ message: ' Livre enregistré !' }))
+      .catch((error) => res.status(400).json({ error }))
+  } else {
+    res.status(400).json('Vous devez noter le livre')
+  }
 }
 
 exports.modifyingBook = (req, res, next) => {
