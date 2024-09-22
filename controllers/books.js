@@ -83,7 +83,7 @@ exports.deleteBook = (req, res, next) => {
         res.status(401).json({ message: 'unauthorized' })
       } else {
         //Suppresion de l'image du server (Green Code)
-        const filename = book.imageUrl.split('/images/'[1])
+        const filename = book.imageUrl.split('/images/')[1]
         fs.unlink(`images/${filename}`, () => {
           // Suppression du livre de la base de données
           Book.deleteOne({ _id: req.params.id })
