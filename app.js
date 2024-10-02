@@ -9,7 +9,7 @@ const userRoutes = require('./routes/user')
 
 mongoose
   .connect(
-    `mongodb+srv://kayath:MSNoDd8CZLVUVmPq@cluster0.8mkdq.mongodb.net/`
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.8mkdq.mongodb.net/`
   )
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'))
