@@ -1,11 +1,21 @@
+const path = require('path')
 const multer = require('multer')
 const SharpMulter = require('sharp-multer')
 
-//Utilisation de sharp-multer pour redimensioner les images (Green Code)
-const newFilenameFunction = (og_filename, options) => {
-  const name = og_filename.split(' ').join('_')
-  const newname = name + Date.now() + '.' + options.fileFormat
-  return newname
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+const fileFilter = (req, file, cb) => {
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+    cb(null, true)
+  } else {
+    cb(new Error('Invalid file type. Only images are allowed!'), false)
+  }
+}
+
+const newFilenameFunction = (originalName, options) => {
+  const baseName = path.parse(originalName).name
+  const safeBaseName = baseName.replace(/[^a-z0-9_-]/gi, '_')
+  const timestamp = Date.now()
+  return `${safeBaseName}_${timestamp}.${options.fileFormat}`
 }
 
 const storage = SharpMulter({
@@ -13,12 +23,15 @@ const storage = SharpMulter({
     callback(null, 'images')
   },
   filename: newFilenameFunction,
-
   imageOptions: {
-    fileFormat: 'jpg',
+    fileFormat: 'webp',
     quality: 80,
-    resize: { width: 600, height: 800},
+    resize: {
+      width: 463,
+      height: 595,
+      fit: 'inside', 
+    },
   },
 })
 
-module.exports = multer({ storage: storage }).single('image')
+module.exports = multer({ storage: storage, fileFilter: fileFilter }).single('image')
